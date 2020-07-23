@@ -8,6 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="" />
   </head>
+
+  <style>
+    #canvas {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
   <body>
     <canvas id="canvas"></canvas>
     <script src="js/script.js" async defer></script>
@@ -24,17 +31,20 @@
         v_color = a_color;
       }
     </script>
+
     <script id="fragment-shader-3d" type="x-shader/x-fragment">
       precision mediump float;
 
       varying vec4 v_color;
 
       void main(){
-        gl_FragColor = v_color;
+        gl_FragColor = vec4(1, 0.5, 0.5, 1);
       }
     </script>
+    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
     <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
     <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
+    <script src="https://greggman.github.io/webgl-lint/webgl-lint.js"></script>
     <script src="js/webgl.js"></script>
   </body>
 </html>
