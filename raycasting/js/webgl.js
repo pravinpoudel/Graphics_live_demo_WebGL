@@ -222,6 +222,7 @@ function main() {
   drawScene();
 
   function drawScene() {
+    
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
