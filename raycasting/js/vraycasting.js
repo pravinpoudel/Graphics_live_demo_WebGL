@@ -4,13 +4,16 @@ in vec3 a_position;
 
 uniform mat4 u_worldViewProjection;
 uniform vec3 u_dimensionScale;
+uniform vec3 eye_position;
 
+out vec3 ray_direction;
+out vec3 eye_position2;
 void main(){
 
-  // don't mutate a_position since it is allowable and it will throw error
   vec3 translation = vec3(0.5,0.5,0.5)-vec3(1, 1,1)*0.5;
   gl_Position = u_worldViewProjection* vec4(vec3(1, 1, 1)*a_position + translation, 1);
-
+  ray_direction = a_position - eye_position;
+  eye_position2 = eye_position;
 }
 `;
 
@@ -18,13 +21,46 @@ const fs = `#version 300 es
 
 precision highp float;
 
+in vec3 ray_direction;
+in vec3 eye_position2;
+
 uniform highp sampler3D volumeMap;
 uniform highp sampler2D colorMap;
 
+
+// i dont understand why uniform is throwing error
+highp float tmin = 1.175494351e-38;   // TO DO: use uniform
+highp float tmax = 3.402823466e+38;
+
 out vec4 outColor;
+
+vec2 boxIntersection(vec3 ray_direction2, float origin[3]){
+  
+  float boxmin[3] = float[3](0.0, 0.0, 0.0);
+  float boxmax[3] = float[3](1.0, 1.0, 1.0);
+  vec3 invdir = 1.0/ray_direction2;
+
+  float inv_raydirection[3] = float[3](invdir.x, invdir.y, invdir.z);
+  for(int i=0; i<3; i++ ){
+    float t1 = (boxmin[i]-origin[i])*inv_raydirection[i];
+    float t2 = (boxmax[i]-origin[i])*inv_raydirection[i];
+
+    tmin = min(tmin, min(t1, t2));
+    tmax = max(tmax, max(t1, t2));
+
+    if(tmax>max(tmin,0.0)){
+      return vec2(tmin, tmax);
+    }
+    else{
+      discard;
+    }
+  }
+}
 
 void main(){
 
+  float origin[3] = float[3](eye_position2.x, eye_position2.y, eye_position2.z);
+  vec2 t_endpoint = boxIntersection(ray_direction, origin);
   float volumedata = texture(volumeMap, vec3(0,0.5,0.5)).r;
   vec3 colordata = texture(colorMap, vec2(volumedata, 0.5)).rgb;
   outColor = vec4(colordata,0.5);
@@ -101,7 +137,7 @@ let dims = [64, 64, 64];
     "u_worldViewProjection"
   );
   let dimScaleLocation = gl.getUniformLocation(program, "u_dimensionScale");
-
+  let eyePositionLocation = gl.getUniformLocation(program, "eye_position");
   volumeMapLoc = gl.getUniformLocation(program, "volumeMap");
   let colormapLoc = gl.getUniformLocation(program, "colorMap");
 
@@ -128,7 +164,7 @@ let dims = [64, 64, 64];
     0,
     gl.RGBA,
     gl.UNSIGNED_BYTE,
-    new Uint8Array([0, 255, 0, 255])
+    new Uint8Array([0, 0, 255, 255])
   );
 
   image.onload = function () {
@@ -161,8 +197,10 @@ let dims = [64, 64, 64];
 
     gl.uniform1i(colormapLoc, 1);
 
-    let cameraPosition = [0, 2, 2];
-    let cameraMatrix = m4.lookAt(cameraPosition, [0, 0, 0], up);
+    let cameraPosition = [0.5, 0.5, 4];
+    gl.uniform3fv(eyePositionLocation, cameraPosition);
+
+    let cameraMatrix = m4.lookAt(cameraPosition, [0.5, 0.5, 0], up);
     let viewMatrix = m4.inverse(cameraMatrix);
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -203,8 +241,8 @@ async function fetchData(dimScaleLocation) {
       dataBuffer
     );
 
-    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
 
     gl.uniform1i(volumeMapLoc, 0);
 
