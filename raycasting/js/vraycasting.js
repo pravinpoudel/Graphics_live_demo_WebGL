@@ -8,10 +8,12 @@ uniform vec3 eye_position;
 
 out vec3 ray_direction;
 out vec3 eye_position2;
+out vec3 dimensionScale;
+
 void main(){
 
-  vec3 translation = vec3(0.5,0.5,0.5)-vec3(1, 1,1)*0.5;
-  gl_Position = u_worldViewProjection* vec4(vec3(1, 1, 1)*a_position + translation, 1);
+  vec3 translation = vec3(0.5,0.5,0.5)-u_dimensionScale*0.5;
+  gl_Position = u_worldViewProjection* vec4(u_dimensionScale*a_position + translation, 1);
   ray_direction = a_position - eye_position;
   eye_position2 = eye_position;
 }
@@ -26,10 +28,11 @@ in vec3 eye_position2;
 
 uniform highp sampler3D volumeMap;
 uniform highp sampler2D colorMap;
+uniform vec3 dimensionVolume;
 
 
 // i dont understand why uniform is throwing error
-highp float tmin = 1.175494351e-38;   // TO DO: use uniform
+highp float tmin = 1.175494351e-38;  
 highp float tmax = 3.402823466e+38;
 
 out vec4 outColor;
@@ -45,26 +48,51 @@ vec2 boxIntersection(vec3 ray_direction2, float origin[3]){
     float t1 = (boxmin[i]-origin[i])*inv_raydirection[i];
     float t2 = (boxmax[i]-origin[i])*inv_raydirection[i];
 
-    tmin = min(tmin, min(t1, t2));
-    tmax = max(tmax, max(t1, t2));
-
-    if(tmax>max(tmin,0.0)){
-      return vec2(tmin, tmax);
-    }
-    else{
-      discard;
-    }
+    tmin = max(tmin, min(t1, t2));
+    tmax = min(tmax, max(t1, t2));
   }
+
+  if(tmax>max(tmin,0.0)){
+    return vec2(tmin, tmax);
+  }
+
+  else{
+    discard;
+  }
+
 }
 
 void main(){
 
+  vec3 ray_direction_normal = normalize(ray_direction);
   float origin[3] = float[3](eye_position2.x, eye_position2.y, eye_position2.z);
-  vec2 t_endpoint = boxIntersection(ray_direction, origin);
-  float volumedata = texture(volumeMap, vec3(0,0.5,0.5)).r;
-  vec3 colordata = texture(colorMap, vec2(volumedata, 0.5)).rgb;
-  outColor = vec4(colordata,0.5);
+  
+  vec2 two_endpoint = boxIntersection(ray_direction_normal, origin);
 
+  vec3 size_of_voxel = 1.0/dimensionVolume;
+  vec3 rayTraverseLength = size_of_voxel/abs(ray_direction_normal);
+
+  float minTraversalLength = min(rayTraverseLength.x, min(rayTraverseLength.y, rayTraverseLength.z));
+
+  vec3 voxelCord = eye_position2 + ray_direction_normal*two_endpoint.x;
+
+  for(float t=two_endpoint.x; t<two_endpoint.y; t+=minTraversalLength){
+
+    float volumedata = texture(volumeMap, voxelCord).r;
+    vec4 colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, volumedata);
+    
+    outColor.rgb += colormapData.rgb*((colormapData.a)*(1.0-outColor.a));
+    outColor.a +=  colormapData.a*(1.0-outColor.a); 
+    
+    if(outColor.a > 0.95){
+      break;
+    }
+    else{
+      voxelCord += ray_direction_normal*minTraversalLength;
+    }
+
+  }
+  
 }
 
 `;
@@ -140,6 +168,7 @@ let dims = [64, 64, 64];
   let eyePositionLocation = gl.getUniformLocation(program, "eye_position");
   volumeMapLoc = gl.getUniformLocation(program, "volumeMap");
   let colormapLoc = gl.getUniformLocation(program, "colorMap");
+  let dimensionVolumeLoc = gl.getUniformLocation(program, "dimensionVolume");
 
   let vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
@@ -195,9 +224,10 @@ let dims = [64, 64, 64];
     gl.useProgram(program);
     gl.bindVertexArray(vao);
 
+    gl.uniform3fv(dimensionVolumeLoc, dims);
     gl.uniform1i(colormapLoc, 1);
 
-    let cameraPosition = [0.5, 0.5, 4];
+    let cameraPosition = [0.5, 0.5, 2];
     gl.uniform3fv(eyePositionLocation, cameraPosition);
 
     let cameraMatrix = m4.lookAt(cameraPosition, [0.5, 0.5, 0], up);
@@ -254,6 +284,7 @@ async function fetchData(dimScaleLocation) {
     ];
 
     gl.uniform3fv(dimScaleLocation, dimensionScale);
+
     console.log(dimensionScale);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, cubeStrip.length / 3);
   }
