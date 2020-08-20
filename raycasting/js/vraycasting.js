@@ -211,7 +211,6 @@ let dims = [64, 64, 64];
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, gl.RED, gl.UNSIGNED_BYTE, image);
-    console.log(image.src);
   };
 
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -265,7 +264,6 @@ let dims = [64, 64, 64];
     cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 2);
 
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
-    console.log(cameraPosition);
     gl.uniform3fv(eyePositionLocation, cameraPosition);
 
     cameraMatrix = m4.lookAt(cameraPosition, [0, 0, 0], up);
@@ -324,7 +322,6 @@ async function fetchData(dimScaleLocation) {
 
     gl.uniform3fv(dimScaleLocation, dimensionScale);
 
-    console.log(dimensionScale);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, cubeStrip.length / 3);
   }
 }
