@@ -61,6 +61,13 @@ vec2 boxIntersection(vec3 ray_direction2, float origin[3]){
   }
 
 }
+float linear_to_srgb(float x) {
+	if (x <= 0.0031308f) {
+		return 12.92f * x;
+	}
+	return 1.055f * pow(x, 1.f / 2.4f) - 0.055f;
+}
+
 
 void main(){
 
@@ -90,6 +97,10 @@ void main(){
     else{
       voxelCord += ray_direction_normal*minTraversalLength;
     }
+
+    outColor.r = linear_to_srgb(outColor.r);
+    outColor.g = linear_to_srgb(outColor.g);
+    outColor.b = linear_to_srgb(outColor.b);
 
   }
   
@@ -208,7 +219,30 @@ let dims = [64, 64, 64];
 
   gl.generateMipmap(gl.TEXTURE_2D);
 
+  function degreeToRadian(angle) {
+    return (angle * Math.PI) / 180;
+  }
+
+  function radianToDegree(angle) {
+    return (180 / Math.PI) * angle;
+  }
+
+  let fovDegree = 60;
+  let fov = degreeToRadian(fovDegree);
+  let cameraAngleRadian = degreeToRadian(0);
   drawScene();
+
+  webglLessonsUI.setupSlider("#cameraAngle", {
+    value: radianToDegree(fov),
+    slide: updateCameraAngle,
+    min: -360,
+    max: 360,
+  });
+
+  function updateCameraAngle(event, ui) {
+    cameraAngleRadian = degreeToRadian(ui.value);
+    drawScene();
+  }
 
   function drawScene() {
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
@@ -227,14 +261,18 @@ let dims = [64, 64, 64];
     gl.uniform3fv(dimensionVolumeLoc, dims);
     gl.uniform1i(colormapLoc, 1);
 
-    let cameraPosition = [0.5, 0.5, 2];
+    let cameraMatrix = m4.yRotation(cameraAngleRadian);
+    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 2);
+
+    let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
+    console.log(cameraPosition);
     gl.uniform3fv(eyePositionLocation, cameraPosition);
 
-    let cameraMatrix = m4.lookAt(cameraPosition, [0.5, 0.5, 0], up);
+    cameraMatrix = m4.lookAt(cameraPosition, [0, 0, 0], up);
     let viewMatrix = m4.inverse(cameraMatrix);
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    let fov = (60 * Math.PI) / 180;
+
     let perspective = m4.perspective(aspect, fov, 0.01, 1000);
     let viewPerspective = m4.multiply(perspective, viewMatrix);
     gl.uniformMatrix4fv(worldViewLocation, false, viewPerspective);
@@ -258,6 +296,10 @@ async function fetchData(dimScaleLocation) {
     let texture = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_3D, texture);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texImage3D(
       gl.TEXTURE_3D,
       0,
@@ -270,9 +312,6 @@ async function fetchData(dimScaleLocation) {
       gl.UNSIGNED_BYTE,
       dataBuffer
     );
-
-    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
 
     gl.uniform1i(volumeMapLoc, 0);
 
