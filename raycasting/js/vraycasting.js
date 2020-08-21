@@ -260,7 +260,7 @@ let dims = [64, 64, 64];
     gl.uniform1i(colormapLoc, 1);
 
     let cameraMatrix = m4.yRotation(cameraAngleRadian);
-    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 2);
+    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 1.7);
 
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
     gl.uniform3fv(eyePositionLocation, cameraPosition);
@@ -283,13 +283,14 @@ async function fetchData(dimScaleLocation) {
   let data = await response.arrayBuffer();
   if (data) {
     dataBuffer = new Uint8Array(data);
+    console.log(dataBuffer.length);
     loadData(dataBuffer);
   } else {
     console.log("action aborted");
   }
 
   function loadData(dataBuffer) {
-    gl.clearColor(0.4, 0.4, 0.5, 0.8);
+    gl.clearColor(0.11, 0, 0.21, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     let texture = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0);
