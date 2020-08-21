@@ -14,8 +14,9 @@ void main(){
 
   vec3 translation = vec3(0.5,0.5,0.5)-u_dimensionScale*0.5;
   gl_Position = u_worldViewProjection* vec4(u_dimensionScale*a_position + translation, 1);
-  ray_direction = a_position - eye_position;
-  eye_position2 = eye_position;
+  eye_position2 = (eye_position - translation) / u_dimensionScale;
+  ray_direction = a_position - eye_position2;
+  
 }
 `;
 
@@ -86,15 +87,14 @@ void main(){
   for(float t=two_endpoint.x; t<two_endpoint.y; t+=minTraversalLength){
 
     float volumedata = texture(volumeMap, voxelCord).r;
-    vec4 colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, volumedata);
+    vec4 colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, 1.25*volumedata);
     
-    outColor.rgb += colormapData.rgb*((colormapData.a)*(1.0-outColor.a));
+    outColor.rgb += (1.0-outColor.a)*(colormapData.a)*colormapData.rgb;
     outColor.a +=  colormapData.a*(1.0-outColor.a); 
     
-    if(outColor.a > 0.95){
+    if(outColor.a > 0.99){
       break;
     }
-    else{
       voxelCord += ray_direction_normal*minTraversalLength;
     }
 
@@ -102,7 +102,7 @@ void main(){
     outColor.g = linear_to_srgb(outColor.g);
     outColor.b = linear_to_srgb(outColor.b);
 
-  }
+  
   
 }
 
@@ -192,7 +192,9 @@ let dims = [64, 64, 64];
 
   let texture = gl.createTexture();
   let image = new Image();
-  image.src = "../raycasting/colormaps/cool-warm-colormap.png";
+  image.crossOrigin = "anonymous";
+  image.src =
+    "https://pravinpoudel.github.io/demo-graphics/raycasting/colormaps/cool-warm-colormap.png";
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(
@@ -210,7 +212,7 @@ let dims = [64, 64, 64];
   image.onload = function () {
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, gl.RED, gl.UNSIGNED_BYTE, image);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE, image);
   };
 
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -247,9 +249,6 @@ let dims = [64, 64, 64];
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    gl.clearColor(0.4, 0.4, 0.5, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
@@ -266,7 +265,7 @@ let dims = [64, 64, 64];
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
     gl.uniform3fv(eyePositionLocation, cameraPosition);
 
-    cameraMatrix = m4.lookAt(cameraPosition, [0, 0, 0], up);
+    cameraMatrix = m4.lookAt(cameraPosition, [0.5, 0.5, 0.5], up);
     let viewMatrix = m4.inverse(cameraMatrix);
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -281,8 +280,7 @@ let dims = [64, 64, 64];
 
 async function fetchData(dimScaleLocation) {
   let response = await fetch(url);
-  let data = await response.body.getReader().read();
-  data = data.value;
+  let data = await response.arrayBuffer();
   if (data) {
     dataBuffer = new Uint8Array(data);
     loadData(dataBuffer);
@@ -291,6 +289,8 @@ async function fetchData(dimScaleLocation) {
   }
 
   function loadData(dataBuffer) {
+    gl.clearColor(0.4, 0.4, 0.5, 0.8);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     let texture = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_3D, texture);
