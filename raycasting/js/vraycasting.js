@@ -87,7 +87,7 @@ void main(){
   for(float t=two_endpoint.x; t<two_endpoint.y; t+=minTraversalLength){
 
     float volumedata = texture(volumeMap, voxelCord).r;
-    vec4 colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, 1.25*volumedata);
+    vec4 colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, volumedata);
     
     outColor.rgb += (1.0-outColor.a)*(colormapData.a)*colormapData.rgb;
     outColor.a +=  colormapData.a*(1.0-outColor.a); 
@@ -98,9 +98,9 @@ void main(){
       voxelCord += ray_direction_normal*minTraversalLength;
     }
 
-    outColor.r = linear_to_srgb(outColor.r);
-    outColor.g = linear_to_srgb(outColor.g);
-    outColor.b = linear_to_srgb(outColor.b);
+    // outColor.r = linear_to_srgb(outColor.r);
+    // outColor.g = linear_to_srgb(outColor.g);
+    // outColor.b = linear_to_srgb(outColor.b);
 
   
   
@@ -193,8 +193,10 @@ let dims = [64, 64, 64];
   let texture = gl.createTexture();
   let image = new Image();
   image.crossOrigin = "anonymous";
-  image.src =
-    "https://pravinpoudel.github.io/demo-graphics/raycasting/colormaps/cool-warm-colormap.png";
+  // "https://pravinpoudel.github.io/demo-graphics/raycasting/colormaps/cool-warm-paraview.png";
+
+  image.src = "../raycasting/colormaps/matplotlib-plasma.png";
+  console.log(image.src);
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(
@@ -228,7 +230,7 @@ let dims = [64, 64, 64];
     return (180 / Math.PI) * angle;
   }
 
-  let fovDegree = 60;
+  let fovDegree = 90;
   let fov = degreeToRadian(fovDegree);
   let cameraAngleRadian = degreeToRadian(0);
   drawScene();
@@ -260,7 +262,7 @@ let dims = [64, 64, 64];
     gl.uniform1i(colormapLoc, 1);
 
     let cameraMatrix = m4.yRotation(cameraAngleRadian);
-    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 1.7);
+    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 1.5);
 
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
     gl.uniform3fv(eyePositionLocation, cameraPosition);
@@ -290,7 +292,7 @@ async function fetchData(dimScaleLocation) {
   }
 
   function loadData(dataBuffer) {
-    gl.clearColor(0.11, 0, 0.21, 1);
+    gl.clearColor(0.11, 0, 0.21, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     let texture = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0);
