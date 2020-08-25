@@ -30,6 +30,7 @@ in vec3 eye_position2;
 uniform highp sampler3D volumeMap;
 uniform highp sampler2D colorMap;
 uniform vec3 dimensionVolume;
+uniform float thresholdIntensity;
 
 
 // i dont understand why uniform is throwing error
@@ -77,24 +78,20 @@ void main(){
 
   vec3 voxelCord = eye_position2 + ray_direction_normal*two_endpoint.x;
 
-  
   float maxSampleValue = 0.0;
   vec4 colormapData = vec4(0.0, 0.0, 0.0, 0.0);
 
   for(float t=two_endpoint.x; t<two_endpoint.y; t+=minTraversalLength){
 
     float volumedata = texture(volumeMap, voxelCord).r;
-    vec4 colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, volumedata);
     
-    outColor.rgb += (1.0-outColor.a)*(colormapData.a)*colormapData.rgb;
-    outColor.a +=  colormapData.a*(1.0-outColor.a); 
-    
-    if(outColor.a > 0.99){
-      break;
+    if(volumedata>thresholdIntensity){
+        maxSampleValue= volumedata;
+        colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, 1.0);
     }
       voxelCord += ray_direction_normal*minTraversalLength;
     }
-  
+  outColor = colormapData;
 }
 
 `;
@@ -147,6 +144,7 @@ const cubeStrip = [
 ];
 const up = [0, 1, 0];
 let volumeMapLoc;
+let thresholdLoc;
 
 let url =
   "https://www.dl.dropboxusercontent.com/s/5rfjobn0lvb7tmo/skull_256x256x256_uint8.raw?dl=1";
@@ -159,6 +157,7 @@ let dims = [256, 256, 256];
     console.log("canvas not founmd");
     return;
   }
+
   program = webglUtils.createProgramFromSources(gl, [vs, fs]);
 
   let positionLoc = gl.getAttribLocation(program, "a_position");
@@ -172,6 +171,7 @@ let dims = [256, 256, 256];
   volumeMapLoc = gl.getUniformLocation(program, "volumeMap");
   let colormapLoc = gl.getUniformLocation(program, "colorMap");
   let dimensionVolumeLoc = gl.getUniformLocation(program, "dimensionVolume");
+  thresholdLoc = gl.getUniformLocation(program, "thresholdIntensity");
 
   let vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
@@ -238,6 +238,17 @@ let dims = [256, 256, 256];
     cameraAngleRadian = degreeToRadian(ui.value);
     drawScene();
   }
+
+  let threshSlider = document.getElementById("sliderInput");
+  let display = document.getElementById("thresholdValue");
+  display.innerHTML = threshSlider.value;
+
+  threshSlider.oninput = function () {
+    let threshValue = this.value;
+    display.innerHTML = this.value;
+    gl.uniform1f(thresholdLoc, threshValue);
+    drawScene();
+  };
 
   function drawScene() {
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);

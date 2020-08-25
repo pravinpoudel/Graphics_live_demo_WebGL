@@ -17,15 +17,27 @@
   </style>
   <link
     rel="stylesheet"
-    href="https://webgl2fundamentals.org/webgl/resources/webgl-tutorials.css"0
+    href="https://webgl2fundamentals.org/webgl/resources/webgl-tutorials.css"
   />
+  <link rel="stylesheet" href="../raycasting/css/style.css" />
   <body>
+    <div class="loader"><span>{</span><span>}</span></div>
     <canvas id="canvas"></canvas>
-
     <div id="uiContainer">
       <div id="ui">
         <div id="cameraAngle"></div>
       </div>
+    </div>
+    <div class="rangeslider">
+      <input
+        type="range"
+        min="1"
+        max="100"
+        value="10"
+        class="sliderInput"
+        id="sliderInput"
+      />
+      <p id="thresholdValue"></p>
     </div>
     <script src="js/script.js" async defer></script>
 
@@ -34,7 +46,8 @@
     <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
     <script src="https://greggman.github.io/webgl-lint/webgl-lint.js"></script>
     <script src="https://webgl2fundamentals.org/webgl/resources/twgl-full.min.js"></script>
-    <script src="js/vraycasting.js"></script>
+    <script src="js/mip.js"></script>
+
     <!-- <script src="js/wirecube.js"></script> -->
   </body>
 </html>
