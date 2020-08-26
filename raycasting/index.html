@@ -13,6 +13,7 @@
     #canvas {
       width: 100%;
       height: 100vh;
+      border: none;
     }
   </style>
   <link
@@ -28,17 +29,35 @@
         <div id="cameraAngle"></div>
       </div>
     </div>
-    <div class="rangeslider">
-      <input
-        type="range"
-        min="1"
-        max="100"
-        value="10"
-        class="sliderInput"
-        id="sliderInput"
-      />
-      <p id="thresholdValue"></p>
+    <div id="iso-div">
+      <div class="value-display">
+        <p id="thresholdValue"></p>
+      </div>
+      <div
+        class="rangeslider"
+        style="
+          transform: rotate(-90deg);
+          background-image: url('../raycasting/colormaps/cool-warm-paraview.png');
+        "
+      >
+        <input
+          type="range"
+          min="1"
+          max="100"
+          value="10"
+          class="sliderInput"
+          id="sliderInput"
+        />
+      </div>
     </div>
+
+    <div class="select-iso-color">
+      <select name="iso-color" id="iso-color">
+        <option value="1.0">grey scale</option>
+        <option value="2.0">color map</option>
+      </select>
+    </div>
+
     <script src="js/script.js" async defer></script>
 
     <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
@@ -46,6 +65,7 @@
     <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
     <script src="https://greggman.github.io/webgl-lint/webgl-lint.js"></script>
     <script src="https://webgl2fundamentals.org/webgl/resources/twgl-full.min.js"></script>
+    <script src="../raycasting/js/shaderSrc.js"></script>
     <script src="js/mip.js"></script>
 
     <!-- <script src="js/wirecube.js"></script> -->

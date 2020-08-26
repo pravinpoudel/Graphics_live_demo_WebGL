@@ -12,7 +12,7 @@ body {
   justify-content: center;
   -webkit-box-align: center;
   align-items: center;
-  background-color: #4684ee;
+  background-color: #4840bf;
 }
 .loader {
   color: #fff;
@@ -43,4 +43,25 @@ body {
     transform: scale(0.8);
     opacity: 0.5;
   }
+}
+
+/* style voralagas */
+
+#iso-div {
+  position: absolute;
+  right: 0px;
+  top: 100px;
+  color: #383636;
+  font-weight: 600;
+  display: none;
+}
+
+.select-iso-color {
+  position: absolute;
+  top: 12px;
+  font-weight: 600;
+}
+
+#iso-color {
+  border: none;
 }

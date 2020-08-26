@@ -1,100 +1,3 @@
-const vs = `#version 300 es
-
-in vec3 a_position;
-
-uniform mat4 u_worldViewProjection;
-uniform vec3 u_dimensionScale;
-uniform vec3 eye_position;
-
-out vec3 ray_direction;
-out vec3 eye_position2;
-out vec3 dimensionScale;
-
-void main(){
-
-  vec3 translation = vec3(0.5,0.5,0.5)-u_dimensionScale*0.5;
-  gl_Position = u_worldViewProjection* vec4(u_dimensionScale*a_position + translation, 1);
-  eye_position2 = (eye_position - translation) / u_dimensionScale;
-  ray_direction = a_position - eye_position2;
-  
-}
-`;
-
-const fs = `#version 300 es
-
-precision highp float;
-
-in vec3 ray_direction;
-in vec3 eye_position2;
-
-uniform highp sampler3D volumeMap;
-uniform highp sampler2D colorMap;
-uniform vec3 dimensionVolume;
-uniform float thresholdIntensity;
-
-
-// i dont understand why uniform is throwing error
-highp float tmin = 1.175494351e-38;  
-highp float tmax = 3.402823466e+38;
-
-out vec4 outColor;
-
-vec2 boxIntersection(vec3 ray_direction2, float origin[3]){
-  
-  float boxmin[3] = float[3](0.0, 0.0, 0.0);
-  float boxmax[3] = float[3](1.0, 1.0, 1.0);
-  vec3 invdir = 1.0/ray_direction2;
-
-  float inv_raydirection[3] = float[3](invdir.x, invdir.y, invdir.z);
-  for(int i=0; i<3; i++ ){
-    float t1 = (boxmin[i]-origin[i])*inv_raydirection[i];
-    float t2 = (boxmax[i]-origin[i])*inv_raydirection[i];
-
-    tmin = max(tmin, min(t1, t2));
-    tmax = min(tmax, max(t1, t2));
-  }
-
-  if(tmax>max(tmin,0.0)){
-    return vec2(tmin, tmax);
-  }
-
-  else{
-    discard;
-  }
-
-}
-
-void main(){
-
-  vec3 ray_direction_normal = normalize(ray_direction);
-  float origin[3] = float[3](eye_position2.x, eye_position2.y, eye_position2.z);
-  
-  vec2 two_endpoint = boxIntersection(ray_direction_normal, origin);
-
-  vec3 size_of_voxel = 1.0/dimensionVolume;
-  vec3 rayTraverseLength = size_of_voxel/abs(ray_direction_normal);
-
-  float minTraversalLength = min(rayTraverseLength.x, min(rayTraverseLength.y, rayTraverseLength.z));
-
-  vec3 voxelCord = eye_position2 + ray_direction_normal*two_endpoint.x;
-
-  float maxSampleValue = 0.0;
-  vec4 colormapData = vec4(0.0, 0.0, 0.0, 0.0);
-
-  for(float t=two_endpoint.x; t<two_endpoint.y; t+=minTraversalLength){
-
-    float volumedata = texture(volumeMap, voxelCord).r;
-    
-    if(volumedata>(thresholdIntensity/100.0)){
-        maxSampleValue= volumedata;
-        colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, 1.0);
-    }
-      voxelCord += ray_direction_normal*minTraversalLength;
-    }
-  outColor = colormapData;
-}
-
-`;
 let canvas = null;
 let gl = null;
 let program = null;
@@ -145,11 +48,13 @@ const cubeStrip = [
 const up = [0, 1, 0];
 let volumeMapLoc;
 let thresholdLoc;
+let miptypeLoc;
 let threshValue = 10.0;
+let selectedMap = 1.0;
 
 let url =
-  "https://www.dl.dropboxusercontent.com/s/5rfjobn0lvb7tmo/skull_256x256x256_uint8.raw?dl=1";
-let dims = [256, 256, 256];
+  "https://www.dl.dropboxusercontent.com/s/7d87jcsh0qodk78/fuel_64x64x64_uint8.raw?dl=1";
+let dims = [64, 64, 64];
 
 (function () {
   canvas = document.getElementById("canvas");
@@ -173,6 +78,8 @@ let dims = [256, 256, 256];
   let colormapLoc = gl.getUniformLocation(program, "colorMap");
   let dimensionVolumeLoc = gl.getUniformLocation(program, "dimensionVolume");
   thresholdLoc = gl.getUniformLocation(program, "thresholdIntensity");
+  miptypeLoc = gl.getUniformLocation(program, "miptype");
+
   console.log(colormapLoc);
   let vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
@@ -249,6 +156,15 @@ let dims = [256, 256, 256];
     drawScene();
   };
 
+  let selector = document.getElementById("iso-color");
+  selector.addEventListener("change", (event) => {
+    let selectorValue = +event.target.value;
+    if (selectorValue !== selectedMap) {
+      selectedMap = selectorValue;
+      drawScene();
+    }
+  });
+
   // ------------------------------------------------------------------------------
   fetchData(dimScaleLocation);
   // --------------------------------------------------------------------------------
@@ -257,6 +173,7 @@ let dims = [256, 256, 256];
     let response = await fetch(url);
     let data = await response.arrayBuffer();
     document.getElementsByClassName("loader")[0].style.display = "none";
+    document.getElementById("iso-div").style.display = "block";
     if (data) {
       dataBuffer = new Uint8Array(data);
       console.log(dataBuffer.length);
@@ -266,8 +183,6 @@ let dims = [256, 256, 256];
     }
 
     function loadData(dataBuffer) {
-      gl.clearColor(0.11, 0, 0.21, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       let texture = gl.createTexture();
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_3D, texture);
@@ -294,6 +209,10 @@ let dims = [256, 256, 256];
   function drawScene() {
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
@@ -302,6 +221,7 @@ let dims = [256, 256, 256];
     gl.bindVertexArray(vao);
 
     gl.uniform1f(thresholdLoc, threshValue);
+    gl.uniform1f(miptypeLoc, selectedMap);
 
     gl.uniform3fv(dimensionVolumeLoc, dims);
     gl.uniform1i(colormapLoc, 1);
@@ -317,7 +237,7 @@ let dims = [256, 256, 256];
     gl.uniform3fv(dimScaleLocation, dimensionScale);
 
     let cameraMatrix = m4.yRotation(cameraAngleRadian);
-    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 3);
+    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 2.5);
 
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
     gl.uniform3fv(eyePositionLocation, cameraPosition);
