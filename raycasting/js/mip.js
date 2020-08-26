@@ -85,7 +85,7 @@ void main(){
 
     float volumedata = texture(volumeMap, voxelCord).r;
     
-    if(volumedata>thresholdIntensity){
+    if(volumedata>(thresholdIntensity/100.0)){
         maxSampleValue= volumedata;
         colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, 1.0);
     }
@@ -145,6 +145,7 @@ const cubeStrip = [
 const up = [0, 1, 0];
 let volumeMapLoc;
 let thresholdLoc;
+let threshValue = 10.0;
 
 let url =
   "https://www.dl.dropboxusercontent.com/s/5rfjobn0lvb7tmo/skull_256x256x256_uint8.raw?dl=1";
@@ -172,7 +173,7 @@ let dims = [256, 256, 256];
   let colormapLoc = gl.getUniformLocation(program, "colorMap");
   let dimensionVolumeLoc = gl.getUniformLocation(program, "dimensionVolume");
   thresholdLoc = gl.getUniformLocation(program, "thresholdIntensity");
-
+  console.log(colormapLoc);
   let vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
 
@@ -225,7 +226,6 @@ let dims = [256, 256, 256];
   let fovDegree = 90;
   let fov = degreeToRadian(fovDegree);
   let cameraAngleRadian = degreeToRadian(0);
-  drawScene();
 
   webglLessonsUI.setupSlider("#cameraAngle", {
     value: radianToDegree(fov),
@@ -244,16 +244,56 @@ let dims = [256, 256, 256];
   display.innerHTML = threshSlider.value;
 
   threshSlider.oninput = function () {
-    let threshValue = this.value;
+    threshValue = 1.0 * this.value;
     display.innerHTML = this.value;
-    gl.uniform1f(thresholdLoc, threshValue);
     drawScene();
   };
+
+  // ------------------------------------------------------------------------------
+  fetchData(dimScaleLocation);
+  // --------------------------------------------------------------------------------
+
+  async function fetchData(dimScaleLocation) {
+    let response = await fetch(url);
+    let data = await response.arrayBuffer();
+    document.getElementsByClassName("loader")[0].style.display = "none";
+    if (data) {
+      dataBuffer = new Uint8Array(data);
+      console.log(dataBuffer.length);
+      loadData(dataBuffer);
+    } else {
+      console.log("action aborted");
+    }
+
+    function loadData(dataBuffer) {
+      gl.clearColor(0.11, 0, 0.21, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      let texture = gl.createTexture();
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_3D, texture);
+      gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage3D(
+        gl.TEXTURE_3D,
+        0,
+        gl.R8,
+        dims[0],
+        dims[1],
+        dims[2],
+        0,
+        gl.RED,
+        gl.UNSIGNED_BYTE,
+        dataBuffer
+      );
+      drawScene();
+    }
+  }
 
   function drawScene() {
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
@@ -261,8 +301,20 @@ let dims = [256, 256, 256];
     gl.useProgram(program);
     gl.bindVertexArray(vao);
 
+    gl.uniform1f(thresholdLoc, threshValue);
+
     gl.uniform3fv(dimensionVolumeLoc, dims);
     gl.uniform1i(colormapLoc, 1);
+    gl.uniform1i(volumeMapLoc, 0);
+
+    let maxValue = Math.max(...dims);
+    let dimensionScale = [
+      dims[0] / maxValue,
+      dims[1] / maxValue,
+      dims[2] / maxValue,
+    ];
+
+    gl.uniform3fv(dimScaleLocation, dimensionScale);
 
     let cameraMatrix = m4.yRotation(cameraAngleRadian);
     cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 3);
@@ -279,57 +331,6 @@ let dims = [256, 256, 256];
     let viewPerspective = m4.multiply(perspective, viewMatrix);
     gl.uniformMatrix4fv(worldViewLocation, false, viewPerspective);
 
-    fetchData(dimScaleLocation);
-  }
-})();
-
-async function fetchData(dimScaleLocation) {
-  let response = await fetch(url);
-  let data = await response.arrayBuffer();
-  canvas.style.display = "block";
-  document.getElementsByClassName("loader")[0].style.display = "none";
-  if (data) {
-    dataBuffer = new Uint8Array(data);
-    console.log(dataBuffer.length);
-    loadData(dataBuffer);
-  } else {
-    console.log("action aborted");
-  }
-
-  function loadData(dataBuffer) {
-    gl.clearColor(0.11, 0, 0.21, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    let texture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_3D, texture);
-    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage3D(
-      gl.TEXTURE_3D,
-      0,
-      gl.R8,
-      dims[0],
-      dims[1],
-      dims[2],
-      0,
-      gl.RED,
-      gl.UNSIGNED_BYTE,
-      dataBuffer
-    );
-
-    gl.uniform1i(volumeMapLoc, 0);
-
-    let maxValue = Math.max(...dims);
-    let dimensionScale = [
-      dims[0] / maxValue,
-      dims[1] / maxValue,
-      dims[2] / maxValue,
-    ];
-
-    gl.uniform3fv(dimScaleLocation, dimensionScale);
-
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, cubeStrip.length / 3);
   }
-}
+})();
