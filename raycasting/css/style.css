@@ -1,11 +1,22 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+/* ----------------------------------------------------------------------------------------------------- */
+
+/* loader design */
+
 html,
 body {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
-body {
+/* body {
   display: -webkit-box;
   display: flex;
   -webkit-box-pack: center;
@@ -13,7 +24,7 @@ body {
   -webkit-box-align: center;
   align-items: center;
   background-color: #4840bf;
-}
+} */
 .loader {
   color: #fff;
   font-family: Consolas, Menlo, Monaco, monospace;
@@ -47,6 +58,118 @@ body {
 
 /* style voralagas */
 
+/* ----------------------------------------------------------------------------------------------------------------- */
+
+/* menubar start */
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  min-height: 8vh;
+  font-family: "Rubik", sans-serif;
+  background: #7d7d7d;
+}
+
+.logo {
+  color: white;
+  font-family: "Pacifico", cursive;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.menu-list {
+  display: flex;
+  width: 40%;
+  justify-content: space-between;
+}
+
+.menu-list li {
+  list-style-type: none;
+}
+
+.menu-list li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.burger {
+  display: none;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  margin-top: 4px;
+  background-color: #fff;
+  transition: 0.7s ease;
+}
+
+/* tablet screen */
+
+@media all and (max-width: 1024px) {
+  .menu-list {
+    width: 60%;
+  }
+}
+
+/* mobile screen for burger */
+@media all and (max-width: 768px) {
+  .burger {
+    display: block;
+  }
+
+  .menu-list {
+    position: absolute;
+    top: 8vh;
+    right: 0px;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 92vh;
+    justify-content: space-around;
+    align-items: center;
+    background: #7d7d7d;
+    transform: translateX(100%);
+    transition: transform 0.7s ease;
+  }
+
+  .menu-list li {
+    opacity: 0;
+  }
+
+  .nav-active {
+    transform: translateX(0%);
+  }
+}
+
+.toggle .line1 {
+  transform: rotate(45deg) translate(0px, 5px);
+}
+
+.toggle .line2 {
+  display: none;
+}
+
+.toggle .line3 {
+  transform: rotate(-45deg) translate(0px, -6px);
+}
+
+@keyframes menulistfade {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+
+/* menubar-end */
+
+/* -------------------------------------------------------------------------------------------------------------------- */
 #iso-div {
   position: absolute;
   right: 0px;

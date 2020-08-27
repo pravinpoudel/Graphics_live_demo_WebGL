@@ -6,7 +6,14 @@
     <title></title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <style>
@@ -22,6 +29,25 @@
   />
   <link rel="stylesheet" href="../raycasting/css/style.css" />
   <body>
+    <div class="navbar-wrapper">
+      <nav>
+        <div class="logo">
+          <span>VORALAGAS</span>
+        </div>
+        <ul class="menu-list">
+          <li><a href="#home">Portfolio</a></li>
+          <li><a href="#home">Blog</a></li>
+          <li><a href="#home">I am doing this</a></li>
+          <li><a href="#home">About Me</a></li>
+          <li><a href="#home">Contact</a></li>
+        </ul>
+        <div class="burger">
+          <div class="line1"></div>
+          <div class="line2"></div>
+          <div class="line3"></div>
+        </div>
+      </nav>
+    </div>
     <div class="loader"><span>{</span><span>}</span></div>
     <canvas id="canvas"></canvas>
     <div id="uiContainer">
@@ -66,6 +92,7 @@
     <script src="https://greggman.github.io/webgl-lint/webgl-lint.js"></script>
     <script src="https://webgl2fundamentals.org/webgl/resources/twgl-full.min.js"></script>
     <script src="../raycasting/js/shaderSrc.js"></script>
+    <script src="../raycasting/js/domScript.js"></script>
     <script src="js/mip.js"></script>
 
     <!-- <script src="js/wirecube.js"></script> -->
