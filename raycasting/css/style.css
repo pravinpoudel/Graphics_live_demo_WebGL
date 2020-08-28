@@ -270,3 +270,42 @@ option {
   line-height: 1.5;
   color: #414141;
 }
+.poster-wrapper {
+  position: relative;
+  top: 25%;
+  margin: 0 35px;
+  color: white;
+}
+
+.poster-wrapper div.love {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #e52e71;
+}
+
+.main-wrapper {
+  background: url("../images/PET-MIPS-anim.gif");
+  height: 92vh;
+  margin: 0px;
+  background-size: cover;
+  background-position: center;
+}
+
+.technologies {
+  list-style-type: none;
+  max-width: fit-content;
+  background: #000090b8;
+  margin: 25px;
+  padding: 12px;
+}
+
+.technologies h3 {
+  margin: 10px 0px;
+  color: white;
+}
+
+.technologies li {
+  text-align: left;
+  padding: 15px;
+  color: white;
+}
