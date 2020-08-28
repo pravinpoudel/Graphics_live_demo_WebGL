@@ -156,14 +156,24 @@ let dims = [64, 64, 64];
     drawScene();
   };
 
-  let selector = document.getElementById("iso-color");
-  selector.addEventListener("change", (event) => {
-    let selectorValue = +event.target.value;
-    if (selectorValue !== selectedMap) {
-      selectedMap = selectorValue;
+  let isoOptions = document.querySelectorAll(
+    'input[type="radio"][name="isoType"]'
+  );
+  isoOptions.forEach((radio) =>
+    radio.addEventListener("change", (event) => {
+      selectedMap = +event.target.value;
       drawScene();
-    }
-  });
+    })
+  );
+
+  // let selector = document.getElementById("iso-color");
+  // selector.addEventListener("change", (event) => {
+  //   let selectorValue = +event.target.value;
+  //   if (selectorValue !== selectedMap) {
+  //     selectedMap = selectorValue;
+  //     drawScene();
+  //   }
+  // });
 
   // ------------------------------------------------------------------------------
   fetchData(dimScaleLocation);
@@ -237,7 +247,7 @@ let dims = [64, 64, 64];
     gl.uniform3fv(dimScaleLocation, dimensionScale);
 
     let cameraMatrix = m4.yRotation(cameraAngleRadian);
-    cameraMatrix = m4.translate(cameraMatrix, 1, 0.5, 2.5);
+    cameraMatrix = m4.translate(cameraMatrix, 1.0, 0.5, 2.0);
 
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
     gl.uniform3fv(eyePositionLocation, cameraPosition);

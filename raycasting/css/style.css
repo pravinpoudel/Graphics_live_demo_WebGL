@@ -2,10 +2,10 @@
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
+  font-family: "Rubik", sans-serif;
 }
 
-/* ----------------------------------------------------------------------------------------------------- */
-
+/* -------------------------------------------------- */
 /* loader design */
 
 html,
@@ -14,6 +14,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  background: white;
   overflow-x: hidden;
 }
 /* body {
@@ -25,8 +26,17 @@ body {
   align-items: center;
   background-color: #4840bf;
 } */
+
+a {
+  text-decoration: none;
+}
+.note-div a {
+  color: #e83864;
+  font-weight: 600;
+}
+
 .loader {
-  color: #fff;
+  color: #ed4a4e;
   font-family: Consolas, Menlo, Monaco, monospace;
   font-weight: bold;
   font-size: 30vh;
@@ -170,21 +180,93 @@ nav {
 /* menubar-end */
 
 /* -------------------------------------------------------------------------------------------------------------------- */
+
+#ui {
+  position: absolute;
+  top: 10vh;
+  right: 0px;
+}
+
 #iso-div {
   position: absolute;
   right: 0px;
-  top: 100px;
+  top: 45vh;
   color: #383636;
   font-weight: 600;
   display: none;
 }
+.value-display {
+  position: relative;
+  top: 25px;
+  left: 10px;
+  font-size: 14px;
+  /* font-weight: 600; */
+  color: #5f5a5a;
+  font-family: monospace;
+}
 
 .select-iso-color {
   position: absolute;
-  top: 12px;
-  font-weight: 600;
+  top: 20vh;
+  right: 41px;
+  /* font-weight: 600;
+  padding: 9px;
+  background: #7d7d7d; */
+}
+
+.select-title {
+  text-transform: uppercase;
+  margin: 12px;
+  letter-spacing: -0.5px;
+  color: #555354;
+}
+
+.select-title h4 {
+  font-weight: 500;
+}
+
+.option-input-container {
+  background: linear-gradient(90deg, #ff8a00, #e52e71);
+  color: #f5f6fa;
+  transition: 0.5s ease;
+  border-radius: 5px;
+}
+
+.option-input-container .option-input {
+  padding: 15px 25px;
+  cursor: pointer;
+}
+
+.option-input-container .option-input:hover {
+  background: #555354;
+}
+
+.option-input-container label {
+  cursor: pointer;
 }
 
 #iso-color {
   border: none;
+  background: none;
+  color: white;
+  font-size: 16px;
+}
+
+.rangeslider {
+  padding: 10px;
+  transform: rotate(-90deg);
+  background-image: url("../colormaps/cool-warm-paraview.png");
+}
+
+option {
+  color: #383636;
+}
+
+.note-div {
+  position: absolute;
+  top: 10vh;
+  max-width: 60%;
+  padding: 20px;
+  line-height: 1.5;
+  color: #414141;
 }
