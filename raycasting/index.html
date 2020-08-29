@@ -18,9 +18,10 @@
 
   <style>
     #canvas {
-      width: 100%;
+      width: 80%;
       height: 92vh;
       border: none;
+      
     }
   </style>
 
@@ -56,12 +57,21 @@
         <a class="neon-button" data-value="2.0">Maximum Intensity func</a>
       </div>
     </div>
+    <div class="title">
+      <span class="title-span">
+        Visualization of Simulation of fuel injection into a combustion chamber.
+      </span>
+      <span> Raw Data Source: University of Utah, U.S.A</span><br />
+      <span>Tool Used: WebGL 2.0, GLSL - Volumetric Raycasting, AABB</span>
+    </div>
     <div>
-      <span class="sorry">
-        Sorry for the camera control, this is unusal because of not positioning
+      <div class="info">
+        <span class="info"></span>
+        <span class="sorry">
+        <!-- Sorry for the camera control, this is unusal because of not positioning
         the local of visual in center ( if you are curious ). I will soon use
         arcball camera than the current orbital camera. I am leaving this here
-        as it is and will implement arcball camera soon.
+        as it is and will implement arcball camera soon. -->
       </span>
     </div>
 
@@ -80,8 +90,10 @@
         <span> Tool: WebGL, GLSL </span>
       </div>
     </div>
-
-    <canvas id="canvas"></canvas>
+    <div class="container-wrapper" style="margin-left: 0%;">
+      <canvas id="canvas"></canvas>
+    </div>
+    
     <div id="uiContainer">
       <div id="ui">
         <div id="cameraAngle"></div>
@@ -101,13 +113,13 @@
               id="grayScale"
               name="isoType"
               value="1.0"
-              checked
+              
             />
             <label for="grayScale">Gray scale</label>
           </div>
 
           <div class="option-input">
-            <input type="radio" id="colorMapped" name="isoType" value="2.0" />
+            <input type="radio" id="colorMapped" name="isoType" value="2.0" checked/>
             <label for="colorMapped">Color mapped</label>
           </div>
         </div>

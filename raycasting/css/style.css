@@ -11,13 +11,36 @@
   font-style: italic;
 }
 
-.sorry {
-  max-width: 70%;
+span.info {
   position: absolute;
   top: 20vh;
   left: 20px;
+  font-size: 18px;
+  /* font-weight: 600; */
+}
+
+.sorry {
+  max-width: 70%;
+  position: absolute;
+  top: 25vh;
+  left: 20px;
   font-size: 16px;
   line-height: italic;
+}
+
+.title {
+  padding: 15px;
+  position: absolute;
+  bottom: 5vh;
+  left: 10px;
+}
+
+.title-span {
+  font-size: 20px;
+  font-weight: 500;
+  font-style: initial;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 /* -------------------------------------------------- */
 /* loader design */
@@ -343,9 +366,17 @@ option {
     ),
     url(../images/ozone.gif);
 }
+
 .aboutthis {
+  top: 11%;
+  max-width: 100%;
   color: #383636;
-  font-size: 20px;
+  font-size: 18px;
+}
+
+.aboutthis p {
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 .technologies {

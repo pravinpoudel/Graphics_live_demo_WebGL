@@ -52,7 +52,7 @@ let miptypeLoc;
 let rayFunctionLoc;
 let rayFunction = 1.0;
 let threshValue = 10.0;
-let selectedMap = 1.0;
+let selectedMap = 2.0;
 
 let url =
   "https://www.dl.dropboxusercontent.com/s/7d87jcsh0qodk78/fuel_64x64x64_uint8.raw?dl=1";
