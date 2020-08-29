@@ -5,6 +5,12 @@
   font-family: "Rubik", sans-serif;
 }
 
+.blog {
+  color: #1310cc;
+  font-weight: 900;
+  font-style: italic;
+}
+
 /* -------------------------------------------------- */
 /* loader design */
 
@@ -78,7 +84,7 @@ nav {
   align-items: center;
   min-height: 8vh;
   font-family: "Rubik", sans-serif;
-  background: #7d7d7d;
+  background: #555353;
 }
 
 .logo {
@@ -290,8 +296,21 @@ option {
 .poster-wrapper {
   position: relative;
   top: 25%;
+  max-width: 70%;
+  /* font-size: 20px; */
+  line-height: 1.5;
   margin: 0 35px;
   color: white;
+}
+
+.abouthis {
+  font-size: 20px;
+}
+
+.mid-big {
+  font-size: 30px;
+  font-weight: 600;
+  font-style: italic;
 }
 
 .poster-wrapper div.love {
@@ -306,6 +325,19 @@ option {
   margin: 0px;
   background-size: cover;
   background-position: center;
+}
+
+.abouthis-wrapper {
+  background: linear-gradient(
+      0deg,
+      rgb(238 238 238 / 30%),
+      rgb(255 251 251 / 63%)
+    ),
+    url(../images/ozone.gif);
+}
+.aboutthis {
+  color: #383636;
+  font-size: 20px;
 }
 
 .technologies {
