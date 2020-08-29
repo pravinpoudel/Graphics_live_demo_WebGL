@@ -19,4 +19,4 @@ const burgerSlide = () => {
   });
 };
 
-burgerSlide();
+

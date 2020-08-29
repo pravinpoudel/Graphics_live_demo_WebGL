@@ -32,6 +32,7 @@ uniform highp sampler2D colorMap;
 uniform vec3 dimensionVolume;
 uniform float thresholdIntensity;
 uniform float miptype;
+uniform float rayFunction;
 
 
 // i dont understand why uniform is throwing error
@@ -83,6 +84,25 @@ void main(){
 
   vec4 colormapData = vec4(0.0, 0.0, 0.0, 0.0);
 
+
+  if(rayFunction == 1.0){
+   
+  for(float t=two_endpoint.x; t<two_endpoint.y; t+=minTraversalLength){
+
+    float volumedata = texture(volumeMap, voxelCord).r;
+    vec4 colormapData = vec4(texture(colorMap, vec2(volumedata, 0.5)).rgb, volumedata);
+    
+    outColor.rgb += (1.0-outColor.a)*(colormapData.a)*colormapData.rgb;
+    outColor.a +=  colormapData.a*(1.0-outColor.a); 
+    
+    if(outColor.a > 0.99){
+      break;
+    }
+      voxelCord += ray_direction_normal*minTraversalLength;
+    }
+}
+
+else{
   for(float t=two_endpoint.x; t<two_endpoint.y; t+=minTraversalLength){
 
     float volumedata = texture(volumeMap, voxelCord).r;
@@ -101,6 +121,7 @@ void main(){
     else{
       outColor = colormapData;
     }
+}
 
 }
 

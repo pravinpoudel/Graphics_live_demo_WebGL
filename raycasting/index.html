@@ -23,6 +23,7 @@
       border: none;
     }
   </style>
+
   <link
     rel="stylesheet"
     href="https://webgl2fundamentals.org/webgl/resources/webgl-tutorials.css"
@@ -32,7 +33,9 @@
     <div class="navbar-wrapper">
       <nav>
         <div class="logo">
-          <span>PRAVIN POUDEL</span>
+          <a href="../raycasting/index.html" style="color: white"
+            >PRAVIN POUDEL</a
+          >
         </div>
         <ul class="menu-list">
           <li><a href="https://poudelpravin.com.np/">Portfolio</a></li>
@@ -47,7 +50,29 @@
         </div>
       </nav>
     </div>
+    <div class="ray-function">
+      <div class="button-container">
+        <a class="neon-button active" data-value="1.0">Accumulative Ray func</a>
+        <a class="neon-button" data-value="2.0">Maximum Intensity func</a>
+      </div>
+    </div>
+
     <div class="loader"><span>{</span><span>}</span></div>
+
+    <div class="note-div-wrapper">
+      <div class="note-div">
+        <span>
+          Note: This website is underconstruction and i am working to present
+          this as a demo site for all articles related to 3D Scientific
+          Visualisation that i am posting very soon in my
+          <a href="www.icodeeveryday.com">blog</a>. Subscribe to receive
+          notification in your inbox.
+        </span>
+        <hr />
+        <span> Tool: WebGL, GLSL </span>
+      </div>
+    </div>
+
     <canvas id="canvas"></canvas>
     <div id="uiContainer">
       <div id="ui">
@@ -70,17 +95,6 @@
       </div>
     </div>
 
-    <div class="note-div">
-      <span>
-        Note: This website is underconstruction and i am working to present this
-        as a demo site for all articles related to 3D Scientific Visualisation
-        that i am posting very soon in my
-        <a href="www.icodeeveryday.com">blog</a>. Subscribe to receive
-        notification in your inbox.
-      </span>
-      <hr />
-      <span> Tool: WebGL, GLSL </span>
-    </div>
     <div class="select-iso-color">
       <div class="select-div">
         <div class="select-title">
@@ -115,8 +129,8 @@
     <script src="https://greggman.github.io/webgl-lint/webgl-lint.js"></script>
     <script src="https://webgl2fundamentals.org/webgl/resources/twgl-full.min.js"></script>
     <script src="../raycasting/js/shaderSrc.js"></script>
-    <script src="../raycasting/js/domScript.js"></script>
     <script src="js/mip.js"></script>
+    <script src="../raycasting/js/domScript.js"></script>
 
     <!-- <script src="js/wirecube.js"></script> -->
   </body>

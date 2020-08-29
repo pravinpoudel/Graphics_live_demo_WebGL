@@ -49,6 +49,8 @@ const up = [0, 1, 0];
 let volumeMapLoc;
 let thresholdLoc;
 let miptypeLoc;
+let rayFunctionLoc;
+let rayFunction = 1.0;
 let threshValue = 10.0;
 let selectedMap = 1.0;
 
@@ -79,6 +81,7 @@ let dims = [64, 64, 64];
   let dimensionVolumeLoc = gl.getUniformLocation(program, "dimensionVolume");
   thresholdLoc = gl.getUniformLocation(program, "thresholdIntensity");
   miptypeLoc = gl.getUniformLocation(program, "miptype");
+  rayFunctionLoc = gl.getUniformLocation(program, "rayFunction");
 
   console.log(colormapLoc);
   let vao = gl.createVertexArray();
@@ -139,6 +142,23 @@ let dims = [64, 64, 64];
     slide: updateCameraAngle,
     min: -360,
     max: 360,
+  });
+
+  let funcButtons = document.querySelectorAll(".neon-button");
+  funcButtons.forEach((funcButton) => {
+    funcButton.addEventListener("click", (event) => {
+      if (event.target.classList.contains("active")) {
+        return;
+      } else {
+        rayFunction = +event.target.getAttribute("data-value");
+        drawScene();
+        let active = document.querySelector(".neon-button.active");
+        if (active) {
+          active.classList.remove("active");
+        }
+        event.target.classList.add("active");
+      }
+    });
   });
 
   function updateCameraAngle(event, ui) {
@@ -232,7 +252,7 @@ let dims = [64, 64, 64];
 
     gl.uniform1f(thresholdLoc, threshValue);
     gl.uniform1f(miptypeLoc, selectedMap);
-
+    gl.uniform1f(rayFunctionLoc, rayFunction);
     gl.uniform3fv(dimensionVolumeLoc, dims);
     gl.uniform1i(colormapLoc, 1);
     gl.uniform1i(volumeMapLoc, 0);
@@ -247,7 +267,7 @@ let dims = [64, 64, 64];
     gl.uniform3fv(dimScaleLocation, dimensionScale);
 
     let cameraMatrix = m4.yRotation(cameraAngleRadian);
-    cameraMatrix = m4.translate(cameraMatrix, 1.0, 0.5, 2.0);
+    cameraMatrix = m4.translate(cameraMatrix, 1.0, 0.5, 1.5);
 
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
     gl.uniform3fv(eyePositionLocation, cameraPosition);

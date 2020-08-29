@@ -262,13 +262,21 @@ option {
   color: #383636;
 }
 
+.note-div-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
 .note-div {
+  display: none;
   position: absolute;
-  top: 10vh;
+  top: 30vh;
   max-width: 60%;
-  padding: 20px;
+  padding: 85px;
   line-height: 1.5;
+  box-shadow: 1px 4px 8px #cccccc;
   color: #414141;
+  background: #fff4f4;
 }
 .poster-wrapper {
   position: relative;
@@ -308,4 +316,30 @@ option {
   text-align: left;
   padding: 15px;
   color: white;
+}
+
+.ray-function {
+  position: absolute;
+  top: 10vh;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.neon-button {
+  letter-spacing: 1px;
+  padding: 15px 25px;
+  background: #cccccc;
+  margin: 15px 25px;
+  font-size: 15px;
+  text-transform: uppercase;
+  transition: 1s ease;
+}
+
+.neon-button.active {
+  background: #821825;
+  color: white;
+  box-shadow: 0 0 2px #f4642fd9, 0 0 5px #f4642fd9, 0 0 9px #f4642fd9;
 }
