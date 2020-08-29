@@ -187,10 +187,19 @@ nav {
   right: 0px;
 }
 
+.select-iso-color {
+  opacity: 0;
+  transition: 1s ease-in-out;
+}
+
+.select-iso-color.mipActive {
+  opacity: 1;
+}
+
 #iso-div {
-  position: absolute;
+  position: relative;
   right: 0px;
-  top: 45vh;
+  top: 10vh;
   color: #383636;
   font-weight: 600;
   display: none;
