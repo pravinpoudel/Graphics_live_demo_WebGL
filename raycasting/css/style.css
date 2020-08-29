@@ -11,6 +11,14 @@
   font-style: italic;
 }
 
+.sorry {
+  max-width: 70%;
+  position: absolute;
+  top: 20vh;
+  left: 20px;
+  font-size: 16px;
+  line-height: italic;
+}
 /* -------------------------------------------------- */
 /* loader design */
 

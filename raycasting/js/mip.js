@@ -150,6 +150,7 @@ let dims = [64, 64, 64];
       if (event.target.classList.contains("active")) {
         return;
       } else {
+        document.querySelector(".sorry").style.display = "none";
         let isoOption = document.querySelector(".select-iso-color");
         isoOption.classList.toggle("mipActive");
         rayFunction = +event.target.getAttribute("data-value");
