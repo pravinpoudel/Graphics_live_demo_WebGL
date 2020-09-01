@@ -273,6 +273,7 @@ let dims = [64, 64, 64];
     cameraMatrix = m4.translate(cameraMatrix, 1.0, 0.5, 1.5);
 
     let cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
+
     gl.uniform3fv(eyePositionLocation, cameraPosition);
 
     cameraMatrix = m4.lookAt(cameraPosition, [0.5, 0.5, 0.5], up);
