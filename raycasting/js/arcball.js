@@ -1,27 +1,43 @@
-const { mat4, mat3, vec3, quat } = glMatrix;
+const { mat4, mat3, vec3, vec2, quat } = glMatrix;
 
-let quatInv;
-let quat1 = quat.create();
 let mouseClicked = false;
-// quat.invert(quatInv, quat1);
+let prev_point;
+let current_point;
+let rotation;
 
-document.addEventListener("mousedown", getMousePosDown);
-document.addEventListener("mouseup", getMousePosUp);
-document.addEventListener("mousemove", getMousePosMove);
+let canvas = document.querySelector("#canvas");
+let loader = document.querySelector(".loader");
+let loaderDimension = loader.getBoundingClientRect();
+
+function initialSetup() {
+  // intitial camera orientation setup
+  //intiailize the value of camera/view matrix so that it can be called for first time also
+}
+
+canvas.addEventListener("mousedown", getMousePosDown);
+canvas.addEventListener("mouseup", getMousePosUp);
+canvas.addEventListener("mousemove", getMousePosMove);
 
 function getMousePosDown(event) {
   if (event.button === 0) {
     mouseClicked = true;
-    console.log(`this is unit quaernion ${quat1}`);
-    console.log(event.clientX + " " + event.clientY);
+    prev_point = [event.clientX, event.clientY];
+    prev_point = pointClamp(prev_point);
+    vec2.set(prev_point, prev_point[0], prev_point[1]);
+    prev_point = pointtoArcBall(prev_point);
   }
 }
 
+// to find the current point in mouse drag
 function getMousePosMove(event) {
   if (!mouseClicked) {
     console.log("------------------------");
   } else {
-    console.log(`mouse position is dragging at ${event.clientX}`);
+    current_point = [event.clientX, event.clientY];
+    current_point = pointClamp(current_point);
+    vec2.set(current_point, current_point[0], current_point[1]);
+    current_point = pointtoArcBall(current_point);
+    console.log(current_point);
   }
 }
 
@@ -30,4 +46,41 @@ function getMousePosUp(event) {
   if (mouseClicked) {
     console.log("mouse is up");
   }
+}
+
+function pointtoArcBall(point) {
+  let r = vec2.length(point);
+  let q = quat.create();
+  if (r >= 1.0) {
+    vec2.normalize(point, point);
+    quat.set(q, point[0], point[1], 0.0, 0.0);
+  } else {
+    let z = Math.sqrt(1 - r);
+    quat.set(q, point[0], point[1], z, 0.0);
+  }
+  return q;
+}
+
+function pointClamp(point) {
+  canvas = document.querySelector("#canvas");
+  let canvasDimension = canvas.getBoundingClientRect();
+  point = [
+    Math.min(
+      Math.max(
+        (2 * (point[0] - canvasDimension.left)) / canvasDimension["width"] -
+          1.0,
+        -1.0
+      ),
+      1.0
+    ),
+    Math.min(
+      Math.max(
+        1.0 - (2.0 * (point[1] - canvasDimension.top)) / canvasDimension.height,
+        -1.0
+      ),
+      1.0
+    ),
+  ];
+
+  return point;
 }

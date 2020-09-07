@@ -1,4 +1,4 @@
-let canvas = null;
+// let canvas = null;
 let gl = null;
 let program = null;
 const cubeStrip = [

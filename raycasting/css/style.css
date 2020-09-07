@@ -52,7 +52,7 @@ body {
   margin: 0;
   padding: 0;
   background: white;
-  overflow-x: hidden;
+  overflow: auto;
 }
 /* body {
   display: -webkit-box;
