@@ -5,6 +5,7 @@ let prev_point;
 let current_point;
 
 let rotation = mat3.create();
+let qstart = quat.create();
 
 let cameraMatrix = mat4.create();
 let translation = mat4.create();
@@ -15,8 +16,6 @@ let loader = document.querySelector(".loader");
 let loaderDimension = loader.getBoundingClientRect();
 
 function initialCameraSetup(cameraPosition, up) {
-  console.log(up);
-  console.log(cameraPosition);
   // find the orientation axis of an camera
   let forward = vec3.create();
   vec3.set(forward, cameraPosition[0], cameraPosition[1], cameraPosition[2]);
@@ -38,14 +37,15 @@ function initialCameraSetup(cameraPosition, up) {
   rotation[1][1] = forward[1];
   rotation[2][2] = forward[2];
 
-  console.log(up[0]);
   vec3.set(
     cameraPosition,
     cameraPosition[0],
     cameraPosition[1],
     cameraPosition[2]
   );
-  rotation = quat.fromMat3(rotation, rotation);
+
+  rotation = quat.fromMat3(quat.create(), rotation);
+  quat.normalize(rotation, rotation);
   cameraUpdate();
   return inverseCamera;
 }
@@ -63,11 +63,19 @@ function getMousePosMove(event) {
   current_point = pointClamp(current_point);
   vec2.set(current_point, current_point[0], current_point[1]);
   current_point = pointtoArcBall(current_point);
+  console.log(prev_point);
   rotate(current_point);
-  console.log(current_point);
+  return inverseCamera;
 }
 
-function rotate(current_point) {}
+function rotate(current_point) {
+  console.log(current_point);
+  let q = quat.create();
+  quat.multiply(q, current_point, prev_point);
+  quat.multiply(rotation, q, rotation);
+  prev_point = current_point;
+  cameraUpdate();
+}
 
 function pointtoArcBall(point) {
   let r = vec2.length(point);
@@ -109,6 +117,6 @@ function pointClamp(point) {
 function cameraUpdate() {
   mat4.fromQuat(cameraMatrix, rotation);
   mat4.fromTranslation(translation, cameraPosition);
-  mat4.multiply(cameraMatrix, translation, cameraMatrix);
+  mat4.multiply(cameraMatrix, cameraMatrix, translation);
   mat4.invert(inverseCamera, cameraMatrix);
 }

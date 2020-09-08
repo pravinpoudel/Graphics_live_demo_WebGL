@@ -86,6 +86,7 @@ let dims = [64, 64, 64];
       console.log("------------------------");
     } else {
       viewMatrix = getMousePosMove(event);
+      // console.log(viewMatrix);
       drawScene();
     }
   }
@@ -113,7 +114,6 @@ let dims = [64, 64, 64];
   miptypeLoc = gl.getUniformLocation(program, "miptype");
   rayFunctionLoc = gl.getUniformLocation(program, "rayFunction");
 
-  console.log(colormapLoc);
   let vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
 
@@ -129,7 +129,6 @@ let dims = [64, 64, 64];
   // "https://pravinpoudel.github.io/demo-graphics/raycasting/colormaps/cool-warm-paraview.png";
 
   image.src = "../raycasting/colormaps/matplotlib-plasma.png";
-  console.log(image.src);
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(
@@ -233,8 +232,6 @@ let dims = [64, 64, 64];
   cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
   viewMatrix = initialCameraSetup(cameraPosition, up);
 
-  console.log(viewMatrix);
-
   // ------------------------------------------------------------------------------
   fetchData(dimScaleLocation);
   // --------------------------------------------------------------------------------
@@ -246,7 +243,6 @@ let dims = [64, 64, 64];
     document.getElementById("iso-div").style.display = "block";
     if (data) {
       dataBuffer = new Uint8Array(data);
-      console.log(dataBuffer.length);
       loadData(dataBuffer);
     } else {
       console.log("action aborted");
