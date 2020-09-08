@@ -53,7 +53,7 @@ function initialCameraSetup(cameraPosition, up) {
 function getMousePosDown(event) {
   prev_point = [event.clientX, event.clientY];
   prev_point = pointClamp(prev_point);
-  vec2.set(prev_point, prev_point[0], prev_point[1]);
+  prev_point = vec2.set(vec2.create(), prev_point[0], prev_point[1]);
   prev_point = pointtoArcBall(prev_point);
 }
 
@@ -78,13 +78,13 @@ function rotate(current_point) {
 }
 
 function pointtoArcBall(point) {
-  let r = vec2.length(point);
+  let r = vec2.dot(point, point);
   let q = quat.create();
-  if (r >= 1.0) {
+  if (r > 1.0) {
     vec2.normalize(point, point);
     quat.set(q, point[0], point[1], 0.0, 0.0);
   } else {
-    let z = Math.sqrt(1 - r);
+    let z = Math.sqrt(1.0 - r);
     quat.set(q, point[0], point[1], z, 0.0);
   }
   return q;
