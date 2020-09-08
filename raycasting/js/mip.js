@@ -54,6 +54,7 @@ let rayFunction = 1.0;
 let threshValue = 10.0;
 let selectedMap = 2.0;
 let cameraPosition;
+let viewMatrix;
 
 let url =
   "https://www.dl.dropboxusercontent.com/s/7d87jcsh0qodk78/fuel_64x64x64_uint8.raw?dl=1";
@@ -61,6 +62,24 @@ let dims = [64, 64, 64];
 
 (function () {
   canvas = document.getElementById("canvas");
+
+  canvas.addEventListener("mousedown", maingetMousePosDown);
+  canvas.addEventListener("mouseup", maingetMousePosUp);
+  canvas.addEventListener("mousemove", maingetMousePosMove);
+
+  function maingetMousePosDown(event) {
+    viewMatrix = getMousePosDown(event);
+  }
+
+  function maingetMousePosUp(event) {
+    viewMatrix = getMousePosUp(event);
+  }
+
+  function maingetMousePosMove(event) {
+    viewMatrix = getMousePosMove(event);
+    drawScene();
+  }
+
   gl = canvas.getContext("webgl2");
   if (!gl) {
     console.log("canvas not founmd");
@@ -199,6 +218,13 @@ let dims = [64, 64, 64];
   //   }
   // });
 
+  let cameraMatrix = m4.yRotation(cameraAngleRadian);
+  cameraMatrix = m4.translate(cameraMatrix, 0.5, 0.5, 1.5);
+  cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
+  viewMatrix = initialCameraSetup(cameraPosition, up);
+
+  console.log(viewMatrix);
+
   // ------------------------------------------------------------------------------
   fetchData(dimScaleLocation);
   // --------------------------------------------------------------------------------
@@ -236,8 +262,8 @@ let dims = [64, 64, 64];
         gl.UNSIGNED_BYTE,
         dataBuffer
       );
-      drawScene();
     }
+    drawScene();
   }
 
   function drawScene() {
@@ -270,15 +296,8 @@ let dims = [64, 64, 64];
 
     gl.uniform3fv(dimScaleLocation, dimensionScale);
 
-    let cameraMatrix = m4.yRotation(cameraAngleRadian);
-    cameraMatrix = m4.translate(cameraMatrix, 0.5, 0.5, 1.5);
-
-    cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
-
     gl.uniform3fv(eyePositionLocation, cameraPosition);
 
-    let viewMatrix = initialCameraSetup(cameraPosition, up);
-    console.log(viewMatrix);
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
     let perspective = m4.perspective(aspect, fov, 0.01, 1000);

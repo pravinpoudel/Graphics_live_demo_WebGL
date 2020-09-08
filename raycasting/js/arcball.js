@@ -50,10 +50,6 @@ function initialCameraSetup(cameraPosition, up) {
   return inverseCamera;
 }
 
-canvas.addEventListener("mousedown", getMousePosDown);
-canvas.addEventListener("mouseup", getMousePosUp);
-canvas.addEventListener("mousemove", getMousePosMove);
-
 function getMousePosDown(event) {
   if (event.button === 0) {
     mouseClicked = true;
@@ -78,10 +74,7 @@ function getMousePosMove(event) {
   }
 }
 
-
-function rotate(current_point){
-  
-}
+function rotate(current_point) {}
 
 function getMousePosUp(event) {
   mouseClicked = false;
