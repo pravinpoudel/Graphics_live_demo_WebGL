@@ -51,37 +51,23 @@ function initialCameraSetup(cameraPosition, up) {
 }
 
 function getMousePosDown(event) {
-  if (event.button === 0) {
-    mouseClicked = true;
-    prev_point = [event.clientX, event.clientY];
-    prev_point = pointClamp(prev_point);
-    vec2.set(prev_point, prev_point[0], prev_point[1]);
-    prev_point = pointtoArcBall(prev_point);
-  }
+  prev_point = [event.clientX, event.clientY];
+  prev_point = pointClamp(prev_point);
+  vec2.set(prev_point, prev_point[0], prev_point[1]);
+  prev_point = pointtoArcBall(prev_point);
 }
 
 // to find the current point in mouse drag
 function getMousePosMove(event) {
-  if (!mouseClicked) {
-    console.log("------------------------");
-  } else {
-    current_point = [event.clientX, event.clientY];
-    current_point = pointClamp(current_point);
-    vec2.set(current_point, current_point[0], current_point[1]);
-    current_point = pointtoArcBall(current_point);
-    rotate(current_point);
-    console.log(current_point);
-  }
+  current_point = [event.clientX, event.clientY];
+  current_point = pointClamp(current_point);
+  vec2.set(current_point, current_point[0], current_point[1]);
+  current_point = pointtoArcBall(current_point);
+  rotate(current_point);
+  console.log(current_point);
 }
 
 function rotate(current_point) {}
-
-function getMousePosUp(event) {
-  mouseClicked = false;
-  if (mouseClicked) {
-    console.log("mouse is up");
-  }
-}
 
 function pointtoArcBall(point) {
   let r = vec2.length(point);

@@ -68,16 +68,26 @@ let dims = [64, 64, 64];
   canvas.addEventListener("mousemove", maingetMousePosMove);
 
   function maingetMousePosDown(event) {
-    viewMatrix = getMousePosDown(event);
+    if (event.button === 0) {
+      mouseClicked = true;
+      getMousePosDown(event);
+    }
   }
 
   function maingetMousePosUp(event) {
-    viewMatrix = getMousePosUp(event);
+    mouseClicked = false;
+    if (mouseClicked) {
+      console.log("mouse is up");
+    }
   }
 
   function maingetMousePosMove(event) {
-    viewMatrix = getMousePosMove(event);
-    drawScene();
+    if (!mouseClicked) {
+      console.log("------------------------");
+    } else {
+      viewMatrix = getMousePosMove(event);
+      drawScene();
+    }
   }
 
   gl = canvas.getContext("webgl2");
