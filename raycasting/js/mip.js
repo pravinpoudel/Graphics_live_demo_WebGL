@@ -162,7 +162,7 @@ let dims = [64, 64, 64];
     return (180 / Math.PI) * angle;
   }
 
-  let fovDegree = 90;
+  let fovDegree = 60;
   let fov = degreeToRadian(fovDegree);
   let cameraAngleRadian = degreeToRadian(0);
 
@@ -230,6 +230,7 @@ let dims = [64, 64, 64];
   let cameraMatrix = m4.yRotation(cameraAngleRadian);
   cameraMatrix = m4.translate(cameraMatrix, 0.5, 0.5, 1.5);
   cameraPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
+  cameraPosition = [0, 0.5, 1.5];
   viewMatrix = initialCameraSetup(cameraPosition, up);
 
   // ------------------------------------------------------------------------------
@@ -302,11 +303,13 @@ let dims = [64, 64, 64];
 
     gl.uniform3fv(dimScaleLocation, dimensionScale);
 
+    console.log(cameraPosition);
     gl.uniform3fv(eyePositionLocation, cameraPosition);
 
     let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
     let perspective = m4.perspective(aspect, fov, 0.01, 1000);
+    console.log(perspective);
     let viewPerspective = m4.multiply(perspective, viewMatrix);
     gl.uniformMatrix4fv(worldViewLocation, false, viewPerspective);
 

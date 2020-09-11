@@ -8,7 +8,8 @@ let rotation = mat3.create();
 let qstart = quat.create();
 
 let cameraMatrix = mat4.create();
-let translation = mat4.create();
+let centerTranslation = mat4.create();
+let forwardTranslation = vec3.create();
 let inverseCamera = mat4.create();
 
 let canvas = document.querySelector("#canvas");
@@ -17,37 +18,74 @@ let loaderDimension = loader.getBoundingClientRect();
 
 function initialCameraSetup(cameraPosition, up) {
   // find the orientation axis of an camera
-  let forward = vec3.create();
-  vec3.set(forward, cameraPosition[0], cameraPosition[1], cameraPosition[2]);
-  vec3.normalize(forward, forward);
-  let vup = vec3.create();
-  vec3.set(vup, up[0], up[1], up[2]);
-  let right = vec3.create();
-  vec3.cross(right, vup, forward);
-  up = vec3.cross(vec3.create(), forward, right);
-
-  // find the camera matrix that transform the camera space to world space
-  rotation[0][0] = right[0];
-  rotation[0][1] = right[1];
-  rotation[0][2] = right[2];
-  rotation[1][0] = up[0];
-  rotation[1][1] = up[1];
-  rotation[1][2] = up[2];
-  rotation[0][0] = forward[0];
-  rotation[1][1] = forward[1];
-  rotation[2][2] = forward[2];
-
-  vec3.set(
-    cameraPosition,
+  let center = [0.5, 0.5, 0.5];
+  let vcenter = vec3.set(vec3.create(), center[0], center[1], center[2]);
+  vcameraPosition = vec3.set(
+    vec3.create(),
     cameraPosition[0],
     cameraPosition[1],
     cameraPosition[2]
   );
+  let vup = vec3.create();
+  vec3.set(vup, up[0], up[1], up[2]);
+
+  let forward = vec3.create();
+  vec3.sub(forward, vcenter, vcameraPosition);
+  let forwardDistance = vec3.len(forward);
+  vec3.normalize(forward, forward);
+
+  let right = vec3.create();
+  vec3.cross(right, forward, vup);
+  vec3.normalize(right, right);
+
+  up = vec3.cross(vec3.create(), right, forward);
+  vec3.normalize(up, up);
+
+  vec3.cross(right, forward, up);
+  vec3.normalize(right, right);
+
+  rotation = mat3.fromValues(
+    right[0],
+    right[1],
+    right[2],
+    up[0],
+    up[1],
+    up[2],
+    -forward[0],
+    -forward[1],
+    -forward[2]
+  );
+
+  mat3.transpose(rotation, rotation);
+
+  mat4.fromTranslation(centerTranslation, center);
+  mat4.invert(centerTranslation, centerTranslation);
+
+  vec3.set(forwardTranslation, 0, 0, -1.0 * forwardDistance);
+  forwardTranslation = mat4.fromTranslation(mat4.create(), forwardTranslation);
+
+  // find the camera matrix that transform the camera space to world space
+  // rotation[0][0] = right[0];
+  // rotation[0][1] = right[1];
+  // rotation[0][2] = right[2];
+  // rotation[1][0] = up[0];
+  // rotation[1][1] = up[1];
+  // rotation[1][2] = up[2];
+  // rotation[0][0] = forward[0];
+  // rotation[1][1] = forward[1];
+  // rotation[2][2] = forward[2];
+
+  // vec3.set(
+  //   cameraPosition,
+  //   cameraPosition[0],
+  //   cameraPosition[1],
+  //   cameraPosition[2]
+  // );
 
   rotation = quat.fromMat3(quat.create(), rotation);
   quat.normalize(rotation, rotation);
   cameraUpdate();
-  return inverseCamera;
+  return cameraMatrix;
 }
 
 function getMousePosDown(event) {
@@ -65,7 +103,7 @@ function getMousePosMove(event) {
   current_point = pointtoArcBall(current_point);
   console.log(prev_point);
   rotate(current_point);
-  return inverseCamera;
+  return cameraMatrix;
 }
 
 function rotate(current_point) {
@@ -116,7 +154,9 @@ function pointClamp(point) {
 
 function cameraUpdate() {
   mat4.fromQuat(cameraMatrix, rotation);
-  mat4.fromTranslation(translation, cameraPosition);
-  mat4.multiply(cameraMatrix, cameraMatrix, translation);
+  mat4.multiply(cameraMatrix, cameraMatrix, centerTranslation);
+  mat4.multiply(cameraMatrix, forwardTranslation, cameraMatrix);
   mat4.invert(inverseCamera, cameraMatrix);
+  cameraPosition = [inverseCamera[12], inverseCamera[13], inverseCamera[14]];
+  console.log(cameraPosition);
 }
