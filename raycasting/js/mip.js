@@ -165,14 +165,7 @@ let dims = [64, 64, 64];
   let fovDegree = 60;
   let fov = degreeToRadian(fovDegree);
   let cameraAngleRadian = degreeToRadian(0);
-
-  webglLessonsUI.setupSlider("#cameraAngle", {
-    value: radianToDegree(fov),
-    slide: updateCameraAngle,
-    min: -360,
-    max: 360,
-  });
-
+  
   let funcButtons = document.querySelectorAll(".neon-button");
   funcButtons.forEach((funcButton) => {
     funcButton.addEventListener("click", (event) => {
