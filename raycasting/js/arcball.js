@@ -109,33 +109,46 @@ function getMousePosMove(event) {
 function rotate(current_point) {
   console.log(current_point);
   let q = quat.create();
+  //multiplication of two quaternion without real-part encompass two vector products with
+  //single quaternion product
   quat.multiply(q, current_point, prev_point);
   quat.multiply(rotation, q, rotation);
+
   prev_point = current_point;
   cameraUpdate();
 }
 
 function pointtoArcBall(point) {
+  //dot product of a point with itself is square of that point vector's magnitude
   let r = vec2.dot(point, point);
   let q = quat.create();
+
   if (r > 1.0) {
+    //correction for the case if cursor lies outside the circle
     vec2.normalize(point, point);
     quat.set(q, point[0], point[1], 0.0, 0.0);
   } else {
     let z = Math.sqrt(1.0 - r);
     quat.set(q, point[0], point[1], z, 0.0);
   }
+  //we created quaternions without realparts, or more precisely, with zero real parts
   return q;
 }
 
 function pointClamp(point) {
+  // here we again select canvas because the canvas we have already selected has loader so it doesn't give correct canvasDimension.top
+  //when we again select the canvas here, we get same canvas but this time without loader in our windows.
+
   canvas = document.querySelector("#canvas");
   let canvasDimension = canvas.getBoundingClientRect();
+
+  //clamping in the y direction isn't done as same as x because Y axis start from top left in event cordinate system
+  // whereas in WebGL it starts from bottom left
+
   point = [
     Math.min(
       Math.max(
-        (2 * (point[0] - canvasDimension.left)) / canvasDimension["width"] -
-          1.0,
+        (2 * (point[0] - canvasDimension.left)) / canvasDimension.width - 1.0,
         -1.0
       ),
       1.0
@@ -158,5 +171,4 @@ function cameraUpdate() {
   mat4.multiply(cameraMatrix, forwardTranslation, cameraMatrix);
   mat4.invert(inverseCamera, cameraMatrix);
   cameraPosition = [inverseCamera[12], inverseCamera[13], inverseCamera[14]];
-  console.log(cameraPosition);
 }
