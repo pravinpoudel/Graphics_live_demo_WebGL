@@ -1,4 +1,3 @@
-// let canvas = null;
 let gl = null;
 let program = null;
 const cubeStrip = [
@@ -58,6 +57,7 @@ let viewMatrix;
 
 let url =
   "https://www.dl.dropboxusercontent.com/s/7d87jcsh0qodk78/fuel_64x64x64_uint8.raw?dl=1";
+
 let dims = [64, 64, 64];
 
 (function () {
@@ -86,7 +86,6 @@ let dims = [64, 64, 64];
       console.log("------------------------");
     } else {
       viewMatrix = getMousePosMove(event);
-      // console.log(viewMatrix);
       drawScene();
     }
   }
@@ -165,7 +164,7 @@ let dims = [64, 64, 64];
   let fovDegree = 60;
   let fov = degreeToRadian(fovDegree);
   let cameraAngleRadian = degreeToRadian(0);
-  
+
   let funcButtons = document.querySelectorAll(".neon-button");
   funcButtons.forEach((funcButton) => {
     funcButton.addEventListener("click", (event) => {
