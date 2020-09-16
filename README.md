@@ -3,15 +3,15 @@
 
 This is a repo where i push code implementing different ideas and tools to visualize 3D Volume Data.   
 
-## Guidance
-<h3>This project is created with the help of <a href="https://stevepetruzza.io/">Prof. Dr. Steve Petruzza</a> and <a href="https://www.willusher.io/">Will Usher</a>.</h3>
+## Guidance :pray:
+> ### This project is created with the help of [Prof. Dr. Steve Petruzza](https://stevepetruzza.io/) and [Will Usher](https://www.willusher.io/).
 
 ## Purpose
 This is a repository where i push code to demonstrate different ideas in Scientific Visualisation.
-<b> Currently, this repo is hosting the project code of volumetric raycasting.</b>
-You can read the article explaning the idea and code in <a href="https://www.icodeeveryday.com/sci-vis-volumetric-raycasting/">icodeeveryday.com</a> 
+***Currently, this repo is hosting the project code of volumetric raycasting.***
+You can read the article explaning the idea and code in ***[icodeeveryday.com](https://www.icodeeveryday.com/sci-vis-volumetric-raycasting/)***. 
 
-## Tools
+## Tools :rocket:
 1. API- WebGL 2.O (OPENGL ES 3.O)
 2. Shading Language - GLSL ES 3.O
 3. Rendering Technique- Volumetric ray casting (Single-Pass)
@@ -21,5 +21,5 @@ You can read the article explaning the idea and code in <a href="https://www.ico
 
 
 ## Note ( for someone  frustated with decoding in GLSL like i was) : 
-JS file [webgl_lint.js](https://greggman.github.io/webgl-lint/webgl-lint.js) included in index.html is a library developed by  Gregg Tavares. It is very useful tool for debugging specially for GLSL. 
+JS file [webgl_lint.js](https://greggman.github.io/webgl-lint/webgl-lint.js) included in index.html is a library developed by  Gregg Tavares which is very useful tool for debugging specially for GLSL. 
 
