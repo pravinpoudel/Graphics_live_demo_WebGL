@@ -1,12 +1,14 @@
 # Graphics_Live_Demo
 ![screenshot](main-poster.jpg)
 
+Check this [live site](https://pravinpoudel.github.io/Graphics_live_demo_WebGL/raycasting/) to try the demo.
+
 This is a repo where i push code implementing different ideas and tools to visualize 3D Volume Data.   
 
 ## Guidance :pray:
 > ### This project is created with the help of [Prof. Dr. Steve Petruzza](https://stevepetruzza.io/) and [Will Usher](https://www.willusher.io/).
 
-## Purpose
+## Purpose :bulb:
 This is a repository where i push code to demonstrate different ideas in Scientific Visualisation.
 ***Currently, this repo is hosting the project code of volumetric raycasting.***
 You can read the article explaning the idea and code in ***[icodeeveryday.com](https://www.icodeeveryday.com/sci-vis-volumetric-raycasting/)***. 
@@ -20,6 +22,6 @@ You can read the article explaning the idea and code in ***[icodeeveryday.com](h
 6. Bounding Box - Axis-Alligned Bounding Box (AABB)
 
 
-## Note ( for someone  frustated with decoding in GLSL like i was) : 
-JS file [webgl_lint.js](https://greggman.github.io/webgl-lint/webgl-lint.js) included in index.html is a library developed by  Gregg Tavares which is very useful tool for debugging specially for GLSL. 
+## Note ( for anyone frustated with decoding in GLSL like i was/am :sweat: ) : 
+> JS file [webgl_lint.js](https://greggman.github.io/webgl-lint/webgl-lint.js) included in index.html is a library developed by  Gregg Tavares which is very useful tool for debugging specially for GLSL. 
 
